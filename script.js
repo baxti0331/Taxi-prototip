@@ -12,7 +12,7 @@ form.addEventListener('submit', function(e) {
   const from = form.from.value.trim();
   const to = form.to.value.trim();
   const promo = form.promo.value.trim();
-  const phonePattern = /^\+?\d{10,15}$/;
+  const phonePattern = /^\+998\d{9}$/;
 
   if (!phonePattern.test(phone)) {
     alert('Iltimos, to‘g‘ri telefon raqamini kiriting (masalan: +998123456789)');
