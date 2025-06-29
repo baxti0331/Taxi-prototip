@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Tezkor Taxi — Onlayn buyurtma</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="taxi-bg">
+    <div class="slider-container">
+      <div class="slider" id="slider">
+        <div class="slide active">
+          <img src="https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=800&q=80" alt="Qulay salon">
+          <div class="slide-caption">Tezkor Taxi — har bir safarda qulaylik va uslub!</div>
+        </div>
+        <div class="slide">
+          <img src="https://images.unsplash.com/photo-1461632830798-3adb3034e4c8?auto=format&fit=crop&w=800&q=80" alt="Tez taxi">
+          <div class="slide-caption">Mashina chaqiruvi — atigi 5 daqiqa kutish!</div>
+        </div>
+        <div class="slide">
+          <img src="https://images.pexels.com/photos/358070/pexels-photo-358070.jpeg?auto=compress&w=800" alt="24/7 ishlaymiz">
+          <div class="slide-caption">24/7 ishlaymiz — kerak bo‘lsa, biz yoningizdamiz!</div>
+        </div>
+      </div>
+      <div class="slider-controls">
+        <button class="slider-btn" id="prevBtn">&#10094;</button>
+        <button class="slider-btn" id="nextBtn">&#10095;</button>
+      </div>
+    </div>
+
+    <div class="banner">
+      🚖 <b>Yangi mijozlarga 20% chegirma!</b>&nbsp; Promokod: <span class="banner-promo">Tezkor20</span>
+    </div>
+
+    <header>
+      <img src="https://img.icons8.com/ios-filled/100/ffd600/taxi.png" alt="Tezkor Taxi Logotip" class="taxi-logo">
+      <h1>TEZKOR TAXI!</h1>
+      <p class="subtitle">Tez. Arzon. Zamonaviy.</p>
+    </header>
+
+    <section class="order-form-section">
+      <form class="order-form" id="orderForm">
+        <label>
+          Telefon raqami:
+          <input type="tel" name="phone" pattern="\+?\d{10,15}" required placeholder="+998" autocomplete="off">
+        </label>
+        <label>
+          Qayerdan:
+          <input type="text" name="from" required autocomplete="off">
+        </label>
+        <label>
+          Qayerga:
+          <input type="text" name="to" required autocomplete="off">
+        </label>
+        <label>
+          Promokod:
+          <input type="text" name="promo" placeholder="Agar mavjud bo‘lsa" autocomplete="off">
+        </label>
+        <button type="submit">Taxi chaqirish</button>
+      </form>
+      <div id="successMsg" class="success-msg" style="display:none;">
+        Buyurtmangiz qabul qilindi! 🚕 Yo‘lda ketyapmiz.
+      </div>
+    </section>
+  </div>
+
+  <!-- Дополнительные секции -->
+  <section class="about-section">
+    <h2>Nima uchun Tezkor Taxi?</h2>
+    <p>Biz tezkor, xavfsiz va qulay xizmatni taqdim etamiz. Haydovchilarimiz malakali va doim siz uchun tayyor!</p>
+  </section>
+
+  <section class="benefits-section">
+    <h2>Afzalliklarimiz:</h2>
+    <ul>
+      <li>🚗 5 daqiqada yetib boramiz</li>
+      <li>💰 Arzon narxlar va chegirmalar</li>
+      <li>🔒 Xavfsizlik kafolati</li>
+      <li>🕐 24/7 xizmat</li>
+    </ul>
+  </section>
+
+  <section class="reviews-section">
+    <h2>Mijozlar fikrlari:</h2>
+    <div class="review">
+      <p>"Juda tez yetib keldi, rahmat! 👍"</p>
+      <span>— Dilshod</span>
+    </div>
+    <div class="review">
+      <p>"Narxlari juda ma'qul va haydovchi xushmuomala."</p>
+      <span>— Malika</span>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 Tezkor Taxi. Barcha huquqlar himoyalangan.</p>
+  </footer>
+
+  <a href="tel:+998901234567" class="call-button">📞 Qo'ng'iroq qilish</a>
+
+  <script src="script.js"></script>
+</body>
+</html>
