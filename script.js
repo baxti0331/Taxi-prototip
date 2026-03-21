@@ -1,6 +1,6 @@
 // O'zingizning qiymatlaringizni kiriting!
-const BOT_TOKEN = '7622026084:AAFUy3d8unjjJlNRT9ZFtUq_b_SO4lZT7mY';
-const CHAT_ID = '@javascriptprocets'; // Добавил @ для username канала
+const BOT_TOKEN = '8035205642:AAEixE5p7QpqNH4709qsmY72ymUQxAXMF_I';
+const CHAT_ID = '-1003707408510; // Добавил @ для username канала
 
 const form = document.getElementById('orderForm');
 const successMsg = document.getElementById('successMsg');
