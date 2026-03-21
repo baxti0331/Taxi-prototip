@@ -3,17 +3,27 @@ const tg = window.Telegram.WebApp;
 let map;
 let route;
 let multiplier = 1;
+let fromCoords = null;
 
-// Инициализация карты
+// INIT MAP
 ymaps.ready(() => {
   map = new ymaps.Map("map", {
     center: [41.2995, 69.2401],
     zoom: 12,
     controls: []
   });
+
+  // USER GEO
+  ymaps.geolocation.get().then(res => {
+    const coords = res.geoObjects.get(0).geometry.getCoordinates();
+    map.setCenter(coords, 14);
+    fromCoords = coords;
+
+    document.getElementById("from").value = "📍 Sizning joylashuvingiz";
+  });
 });
 
-// тариф
+// TARIF
 document.querySelectorAll(".tariff").forEach(el => {
   el.onclick = () => {
     document.querySelectorAll(".tariff").forEach(t => t.classList.remove("active"));
@@ -23,12 +33,12 @@ document.querySelectorAll(".tariff").forEach(el => {
   };
 });
 
-// расчет маршрута
+// ROUTE + PRICE
 function calculateRoute() {
-  const from = document.getElementById("from").value;
+  const from = fromCoords || document.getElementById("from").value;
   const to = document.getElementById("to").value;
 
-  if (!from || !to) return;
+  if (!to) return;
 
   ymaps.route([from, to]).then(res => {
     if (route) map.geoObjects.remove(route);
@@ -36,18 +46,23 @@ function calculateRoute() {
     route = res;
     map.geoObjects.add(route);
 
-    const distance = route.getLength() / 1000; // км
+    const distance = route.getLength() / 1000;
     const price = (distance * 3000 * multiplier).toFixed(0);
 
-    document.getElementById("price").innerText = `Narx: ${price} so'm`;
+    const priceEl = document.getElementById("price");
+    priceEl.style.opacity = 0;
+
+    setTimeout(() => {
+      priceEl.innerText = `Narx: ${price} so'm`;
+      priceEl.style.opacity = 1;
+    }, 200);
   });
 }
 
-// события
-document.getElementById("from").onchange = calculateRoute;
-document.getElementById("to").onchange = calculateRoute;
+// EVENTS
+document.getElementById("to").addEventListener("change", calculateRoute);
 
-// отправка в Telegram
+// SEND ORDER
 document.getElementById("orderBtn").onclick = () => {
   const order = {
     from: document.getElementById("from").value,
