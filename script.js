@@ -75,7 +75,7 @@ orderBtn.addEventListener('click',()=>{
     const username=localStorage.getItem('username')||'Неизвестно';
     const phone=localStorage.getItem('phone')||'Неизвестно';
     const message=`📌 Новый заказ:\nПользователь: ${username}\nТелефон: ${phone}\nОт: ${from}\nДо: ${to}\nТариф: ${selectedTariff}\n${price}`;
-    fetch(`https://api.telegram.org/bot<YOUR_BOT_TOKEN>/sendMessage`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:'@<YOUR_CHANNEL_ID>',text:message})})
+    fetch(`https://api.telegram.org/bot<8035205642:AAEmFCQeGUFykdyzwa1yiBVS5qP5vtIOqW8>/sendMessage`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:'@<YOUR_CHANNEL_ID>',text:message})})
     .then(res=>res.json()).then(data=>{if(data.ok){alert('Заказ отправлен!');saveOrder({from,to,tariff:selectedTariff,price,username,phone}); notifyUser("Заказ создан", `${from} → ${to}, ${price}`);}else alert('Ошибка при отправке');});
 });
 
