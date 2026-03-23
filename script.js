@@ -1,76 +1,112 @@
-const tg = window.Telegram.WebApp;
+let myMap;
+let currentRoute;
 
-let map;
-let route;
-let multiplier = 1;
-let fromCoords = null;
+ymaps.ready(init);
 
-// INIT MAP
-ymaps.ready(() => {
-  map = new ymaps.Map("map", {
-    center: [41.2995, 69.2401],
-    zoom: 12,
-    controls: []
-  });
+function init() {
+    myMap = new ymaps.Map("map", {
+        center: [41.311081, 69.240562],
+        zoom: 12,
+        controls: []
+    });
 
-  // USER GEO
-  ymaps.geolocation.get().then(res => {
-    const coords = res.geoObjects.get(0).geometry.getCoordinates();
-    map.setCenter(coords, 14);
-    fromCoords = coords;
+    myMap.behaviors.disable('scrollZoom');
 
-    document.getElementById("from").value = "📍 Sizning joylashuvingiz";
-  });
-});
-
-// TARIF
-document.querySelectorAll(".tariff").forEach(el => {
-  el.onclick = () => {
-    document.querySelectorAll(".tariff").forEach(t => t.classList.remove("active"));
-    el.classList.add("active");
-    multiplier = el.dataset.price;
-    calculateRoute();
-  };
-});
-
-// ROUTE + PRICE
-function calculateRoute() {
-  const from = fromCoords || document.getElementById("from").value;
-  const to = document.getElementById("to").value;
-
-  if (!to) return;
-
-  ymaps.route([from, to]).then(res => {
-    if (route) map.geoObjects.remove(route);
-
-    route = res;
-    map.geoObjects.add(route);
-
-    const distance = route.getLength() / 1000;
-    const price = (distance * 3000 * multiplier).toFixed(0);
-
-    const priceEl = document.getElementById("price");
-    priceEl.style.opacity = 0;
-
-    setTimeout(() => {
-      priceEl.innerText = `Narx: ${price} so'm`;
-      priceEl.style.opacity = 1;
-    }, 200);
-  });
+    new ymaps.SuggestView('from');
+    new ymaps.SuggestView('to');
 }
 
-// EVENTS
-document.getElementById("to").addEventListener("change", calculateRoute);
+const fromInput = document.getElementById('from');
+const toInput = document.getElementById('to');
+const priceEl = document.getElementById('price');
+const tariffs = document.querySelectorAll('.tariff');
+const orderBtn = document.getElementById('orderBtn');
+const loader = document.querySelector('.loader');
+const bottomSheet = document.querySelector('.bottom-sheet');
+const dragHandle = document.querySelector('.drag');
 
-// SEND ORDER
-document.getElementById("orderBtn").onclick = () => {
-  const order = {
-    from: document.getElementById("from").value,
-    to: document.getElementById("to").value,
-    tariff: document.querySelector(".tariff.active").innerText,
-    price: document.getElementById("price").innerText
-  };
+let selectedTariff = 1;
 
-  tg.sendData(JSON.stringify(order));
-  tg.close();
-};
+// Выбор тарифа
+tariffs.forEach(t => {
+    t.addEventListener('click', () => {
+        tariffs.forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        selectedTariff = parseFloat(t.dataset.price);
+        calculatePrice();
+    });
+});
+
+// Построение маршрута и расчет цены
+function calculatePrice() {
+    if (!fromInput.value || !toInput.value) return;
+
+    loader.style.display = 'block';
+    priceEl.innerText = '';
+
+    ymaps.route([fromInput.value, toInput.value]).then(route => {
+        loader.style.display = 'none';
+        const distance = route.getLength();
+        const price = (distance / 1000 * selectedTariff * 2500).toFixed(0);
+        priceEl.innerText = `Narx: ${price} so'm`;
+
+        if (currentRoute) myMap.geoObjects.remove(currentRoute);
+        currentRoute = route;
+        route.getPaths().options.set({ strokeColor: '#007bff', strokeWidth: 5 });
+        myMap.geoObjects.add(route);
+        myMap.setBounds(route.getBounds(), { checkZoomRange: true });
+    }).catch(() => {
+        loader.style.display = 'none';
+        priceEl.innerText = `Narx: --`;
+    });
+}
+
+fromInput.addEventListener('change', calculatePrice);
+toInput.addEventListener('change', calculatePrice);
+
+// Отправка заказа в Telegram
+orderBtn.addEventListener('click', () => {
+    const from = fromInput.value;
+    const to = toInput.value;
+    const price = priceEl.innerText;
+
+    if (!from || !to) return alert('Заполните все поля');
+
+    const message = `📌 Новый заказ:\nОт: ${from}\nДо: ${to}\nТариф: ${selectedTariff}\n${price}`;
+
+    fetch(`https://api.telegram.org/bot<YOUR_BOT_TOKEN>/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: '@<YOUR_CHANNEL_ID>', text: message })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.ok) alert('Заказ отправлен!');
+        else alert('Ошибка при отправке');
+    });
+});
+
+// Draggable bottom-sheet
+let dragging = false;
+let startY, startBottom;
+
+dragHandle.addEventListener('mousedown', e => {
+    dragging = true;
+    startY = e.clientY;
+    startBottom = parseInt(window.getComputedStyle(bottomSheet).bottom);
+    document.body.style.userSelect = 'none';
+});
+
+document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    let dy = startY - e.clientY;
+    let newBottom = startBottom + dy;
+    newBottom = Math.min(Math.max(newBottom, 0), window.innerHeight - 100);
+    bottomSheet.style.bottom = `${newBottom}px`;
+    myMap.container.getElement().style.filter = `brightness(${1 - newBottom/window.innerHeight * 0.3})`;
+});
+
+document.addEventListener('mouseup', () => {
+    dragging = false;
+    document.body.style.userSelect = 'auto';
+});
